@@ -1,0 +1,8 @@
+{
+  "title": "RustChain API and Wallet Tutorial: Live Checks Without Secrets",
+  "duration_sec": 142,
+  "bounty": "RustChain issue #309",
+  "wallet": "RTC1410e82d545ce0b3ffd21ca83e2465a8f2c3a64e",
+  "source": "Actual RustChain API and wallet CLI command captures plus generated narration.",
+  "safety": "Read-only public API calls only; no private keys or signed transfers."
+}

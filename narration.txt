@@ -1,0 +1,25 @@
+This RustChain tutorial shows how to inspect the live network and a receiving
+wallet without exposing private keys.
+
+The first check is the public health endpoint. It proves that the node is
+responding, that the database is writable, and which RustChain version is live.
+
+Next, the RustChain wallet command line tool is opened in an isolated uv
+environment. The help output shows the available commands for wallet creation,
+balance checks, signed transfers, transaction history, miner listing, and epoch
+status. In this tutorial we only use read-only commands.
+
+The epoch command gives the current network slot, enrolled miner count, epoch
+pot, and total supply. Then the miners command lists active miner attestations.
+This is useful for checking whether the network has recent real participants
+before you try to mine or monitor rewards.
+
+The wallet balance command queries a receiving wallet by miner id. It does not
+need a private key because it only reads public ledger state. The history call
+shows the same wallet's visible transactions, and the lottery eligibility call
+explains whether that wallet is currently scheduled to produce a slot.
+
+The safe operator pattern is simple: use public API checks for health, epoch,
+miners, balance, history, and eligibility; keep private keys out of recordings;
+only use signed transfer commands when you are intentionally sending RTC from a
+local keystore.

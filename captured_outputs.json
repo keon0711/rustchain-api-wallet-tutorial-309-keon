@@ -1,0 +1,90 @@
+[
+  {
+    "name": "Check live node health",
+    "cmd": [
+      "python3",
+      "-c",
+      "import json,urllib.request; print(json.dumps(json.load(urllib.request.urlopen('https://rustchain.org/health', timeout=15)), indent=2))"
+    ],
+    "output": "$ python3 -c 'import json,urllib.request; print(json.dumps(json.load(urllib.request.urlopen('\"'\"'https://rustchain.org/health'\"'\"', timeout=15)), indent=2))'\n{\n  \"backup_age_hours\": 12.388352983196576,\n  \"db_rw\": true,\n  \"ok\": true,\n  \"tip_age_slots\": 0,\n  \"uptime_s\": 94265,\n  \"version\": \"2.2.1-rip200\"\n}"
+  },
+  {
+    "name": "Inspect wallet CLI commands",
+    "cmd": [
+      "uv",
+      "run",
+      "--with",
+      "requests",
+      "--with",
+      "cryptography",
+      "--with",
+      "mnemonic",
+      "python",
+      "tools/rustchain_wallet_cli.py",
+      "--help"
+    ],
+    "output": "$ uv run --with requests --with cryptography --with mnemonic python tools/rustchain_wallet_cli.py --help\nusage: rustchain-wallet [-h]\n                        {create,import,export,balance,send,history,miners,epoch}\n                        ...\n\nRustChain Wallet CLI\n\npositional arguments:\n  {create,import,export,balance,send,history,miners,epoch}\n    create              Generate new wallet (24-word mnemonic + encrypted\n                        keystore)\n    import              Import wallet from 24-word mnemonic\n    export              Export encrypted keystore JSON\n    balance             Check wallet balance\n    send                Send signed transfer\n    history             Wallet transaction history\n    miners              List active miners\n    epoch               Show current epoch\n\noptions:\n  -h, --help            show this help message and exit"
+  },
+  {
+    "name": "Read current epoch",
+    "cmd": [
+      "uv",
+      "run",
+      "--with",
+      "requests",
+      "--with",
+      "cryptography",
+      "--with",
+      "mnemonic",
+      "python",
+      "tools/rustchain_wallet_cli.py",
+      "epoch"
+    ],
+    "output": "$ uv run --with requests --with cryptography --with mnemonic python tools/rustchain_wallet_cli.py epoch\n{\n  \"blocks_per_epoch\": 144,\n  \"enrolled_miners\": 24,\n  \"epoch\": 179,\n  \"epoch_pot\": 1.5,\n  \"slot\": 25891,\n  \"total_supply_rtc\": 8388608\n}"
+  },
+  {
+    "name": "Summarize active miners",
+    "cmd": [
+      "bash",
+      "-lc",
+      "PYTHONWARNINGS='ignore:Unverified HTTPS request' uv run --with requests --with cryptography --with mnemonic python tools/rustchain_wallet_cli.py miners | python3 -c 'import sys,json; data=json.load(sys.stdin); miners=data.get(\"miners\", data if isinstance(data,list) else data.get(\"items\", [])); print(\"active_miners\", len(miners)); print(json.dumps(miners[:3], indent=2))'"
+    ],
+    "output": "$ bash -lc 'PYTHONWARNINGS='\"'\"'ignore:Unverified HTTPS request'\"'\"' uv run --with requests --with cryptography --with mnemonic python tools/rustchain_wallet_cli.py miners | python3 -c '\"'\"'import sys,json; data=json.load(sys.stdin); miners=data.get(\"miners\", data if isinstance(data,list) else data.get(\"items\", [])); print(\"active_miners\", len(miners)); print(json.dumps(miners[:3], indent=2))'\"'\"''\nactive_miners 22\n[\n  {\n    \"antiquity_multiplier\": 1.05,\n    \"device_arch\": \"M4\",\n    \"device_family\": \"Apple Silicon\",\n    \"entropy_score\": 0.0,\n    \"first_attest\": 1774820922,\n    \"hardware_type\": \"Apple Silicon (Modern)\",\n    \"last_attest\": 1780242028,\n    \"miner\": \"RTC14f06ee294f327f5685d3de5e1ed501cffab33e7\"\n  },\n  {\n    \"antiquity_multiplier\": 0.8,\n    \"device_arch\": \"modern\",\n    \"device_family\": \"x86_64\",\n    \"entropy_score\": 0.0,\n    \"first_attest\": 1774820787,\n    \"hardware_type\": \"x86-64 (Modern)\",\n    \"last_attest\": 1780242001,\n    \"miner\": \"modern-sophiacore-3a168058\"\n  },\n  {\n    \"antiquity_multiplier\": 2.0,\n    \"device_arch\": \"POWER8\",\n    \"device_family\": \"PowerPC\",\n    \"entropy_score\": 0.0,\n    \"first_attest\": 1774820803,\n    \"hardware_type\": \"PowerPC (Vintage)\",\n    \"last_attest\": 1780241986,\n    \"miner\": \"power8-s824-sophia\"\n  }\n]"
+  },
+  {
+    "name": "Check receiving wallet balance",
+    "cmd": [
+      "uv",
+      "run",
+      "--with",
+      "requests",
+      "--with",
+      "cryptography",
+      "--with",
+      "mnemonic",
+      "python",
+      "tools/rustchain_wallet_cli.py",
+      "balance",
+      "RTC1410e82d545ce0b3ffd21ca83e2465a8f2c3a64e"
+    ],
+    "output": "$ uv run --with requests --with cryptography --with mnemonic python tools/rustchain_wallet_cli.py balance RTC1410e82d545ce0b3ffd21ca83e2465a8f2c3a64e\n{\n  \"amount_i64\": 0,\n  \"amount_rtc\": 0.0,\n  \"miner_id\": \"RTC1410e82d545ce0b3ffd21ca83e2465a8f2c3a64e\",\n  \"wallet_id\": \"RTC1410e82d545ce0b3ffd21ca83e2465a8f2c3a64e\"\n}"
+  },
+  {
+    "name": "Check public wallet history",
+    "cmd": [
+      "python3",
+      "-c",
+      "import json,urllib.request; print(json.dumps(json.load(urllib.request.urlopen('https://rustchain.org/wallet/history?miner_id=RTC1410e82d545ce0b3ffd21ca83e2465a8f2c3a64e', timeout=15)), indent=2))"
+    ],
+    "output": "$ python3 -c 'import json,urllib.request; print(json.dumps(json.load(urllib.request.urlopen('\"'\"'https://rustchain.org/wallet/history?miner_id=RTC1410e82d545ce0b3ffd21ca83e2465a8f2c3a64e'\"'\"', timeout=15)), indent=2))'\n{\n  \"miner_id\": \"RTC1410e82d545ce0b3ffd21ca83e2465a8f2c3a64e\",\n  \"ok\": true,\n  \"total\": 0,\n  \"transactions\": []\n}"
+  },
+  {
+    "name": "Check mining lottery eligibility",
+    "cmd": [
+      "python3",
+      "-c",
+      "import json,urllib.request; print(json.dumps(json.load(urllib.request.urlopen('https://rustchain.org/lottery/eligibility?miner_id=RTC1410e82d545ce0b3ffd21ca83e2465a8f2c3a64e', timeout=15)), indent=2))"
+    ],
+    "output": "$ python3 -c 'import json,urllib.request; print(json.dumps(json.load(urllib.request.urlopen('\"'\"'https://rustchain.org/lottery/eligibility?miner_id=RTC1410e82d545ce0b3ffd21ca83e2465a8f2c3a64e'\"'\"', timeout=15)), indent=2))'\n{\n  \"eligible\": false,\n  \"reason\": \"not_your_turn\",\n  \"rotation_size\": 24,\n  \"slot\": 25891,\n  \"slot_producer\": \"power8-s824-sophia\",\n  \"your_turn_at_slot\": 25897\n}"
+  }
+]
